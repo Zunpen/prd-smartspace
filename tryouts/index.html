@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Space ITB - Final Prototype</title>
+    <style>
+        :root {
+            --itb-blue: #1e6bb8;
+            --itb-blue-light: #2a7de1;
+            --itb-blue-pale: #e8f1fb;
+            --itb-blue-border: #c2d8f5;
+            --itb-dark: #2c2c2c;
+            --itb-navbar: #333333;
+            --itb-text: #333333;
+            --itb-muted: #6c757d;
+            --itb-bg: #f5f5f5;
+            --itb-white: #ffffff;
+            --itb-green: #28a745;
+            --itb-red: #dc3545;
+            --itb-yellow: #ffc107;
+        }
+
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; text-align: center; background-color: var(--itb-bg); margin: 0; padding: 0; color: var(--itb-text); }
+
+        .header {
+            background: var(--itb-navbar);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0;
+        }
+        .header-brand { font-size: 1.1em; font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; }
+        .header-brand span { color: #aaa; font-weight: 400; font-size: 0.85em; }
+        .header-right { font-size: 0.85em; color: #ccc; }
+
+        .page-body { padding: 24px 20px; }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--itb-text);
+            text-align: left;
+            max-width: 680px;
+            margin: 0 auto 12px auto;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--itb-blue);
+        }
+
+        #user-info {
+            background: var(--itb-white);
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: inline-block;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--itb-blue);
+            font-size: 0.95em;
+        }
+        .points-val { color: var(--itb-blue); font-weight: bold; font-size: 1.1em; }
+
+        #container-meja { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+        .meja {
+            width: 120px; padding: 18px 12px;
+            border-radius: 6px; font-weight: 600;
+            cursor: pointer; transition: 0.2s;
+            border: none; box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+            font-size: 0.9em;
+        }
+        .kosong { background-color: var(--itb-green); color: white; }
+        .kosong:hover { background-color: #219a38; }
+        .terisi { background-color: var(--itb-red); color: white; }
+        .idling { background-color: var(--itb-yellow); color: var(--itb-dark); }
+
+        #panel-kontrol { display: none; margin-bottom: 20px; }
+        .btn-control {
+            padding: 8px 16px; border-radius: 4px; font-weight: 600;
+            cursor: pointer; margin: 0 5px; font-size: 0.9em;
+            background-color: var(--itb-white); border: 1px solid #ccc; color: var(--itb-text);
+        }
+        .btn-idling { background-color: var(--itb-yellow); border-color: var(--itb-yellow); color: var(--itb-dark); }
+        .btn-selesai { background-color: var(--itb-muted); color: white; border-color: var(--itb-muted); }
+        .btn-stand-aktif { background-color: var(--itb-blue); color: white; border-color: var(--itb-blue); }
+
+        #section-kantin {
+            display: none; max-width: 480px; margin: 0 auto 20px auto;
+            padding: 20px; background: var(--itb-white);
+            border-radius: 6px; border: 1px solid var(--itb-blue-border);
+            text-align: left; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .menu-item { border-bottom: 1px solid #eee; padding: 9px 0; display: flex; justify-content: space-between; font-size: 0.9em; }
+        .voucher-box {
+            background: var(--itb-blue-pale); padding: 12px; border-radius: 4px;
+            margin-top: 15px; text-align: center; border: 1px solid var(--itb-blue-border);
+        }
+
+        .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content {
+            background: var(--itb-white); margin: 12% auto; padding: 30px;
+            border-radius: 6px; width: 320px; text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border-top: 4px solid var(--itb-blue);
+        }
+        .btn-main {
+            background: var(--itb-blue); color: white; padding: 9px 20px;
+            border-radius: 4px; border: none; cursor: pointer;
+            font-weight: 600; margin-top: 10px; font-size: 0.9em;
+            transition: background 0.2s;
+        }
+        .btn-main:hover { background: var(--itb-blue-light); }
+
+        .qris-barcode {
+            width: 150px; height: 150px; background: #f8f9fa;
+            border: 2px solid var(--itb-blue-border); margin: 15px auto;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; color: var(--itb-muted); border-radius: 4px;
+        }
+
+        #iot-panel {
+            max-width: 680px;
+            margin: 0 auto 24px auto;
+            background: var(--itb-white);
+            border-radius: 6px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            border: 1px solid var(--itb-blue-border);
+            text-align: left;
+        }
+        #iot-panel .iot-title {
+            color: var(--itb-blue);
+            font-size: 0.8em;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin: 0 0 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #iot-panel .iot-title::before {
+            content: '';
+            display: inline-block;
+            width: 8px; height: 8px;
+            background: var(--itb-green);
+            border-radius: 50%;
+            box-shadow: 0 0 5px var(--itb-green);
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .iot-cards { display: flex; gap: 12px; flex-wrap: wrap; }
+        .iot-card {
+            flex: 1; min-width: 150px;
+            background: var(--itb-blue-pale);
+            border-radius: 6px;
+            padding: 14px 16px;
+            border: 1px solid var(--itb-blue-border);
+            position: relative; overflow: hidden;
+        }
+        .iot-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+        .iot-card.people::after { background: var(--itb-blue); }
+        .iot-card.temp::after { background: #e67e22; }
+        .iot-card.trash::after { background: var(--itb-green); }
+        .iot-card.trash.warn { background: #fff5f5; border-color: #f5c6cb; }
+        .iot-card.trash.warn::after { background: var(--itb-red); }
+
+        .iot-card .iot-icon { font-size: 1.4em; margin-bottom: 5px; }
+        .iot-card .iot-label {
+            color: var(--itb-muted);
+            font-size: 0.7em; font-weight: 700;
+            letter-spacing: 0.07em; text-transform: uppercase;
+        }
+        .iot-card .iot-value {
+            color: var(--itb-blue);
+            font-size: 1.7em; font-weight: 800;
+            line-height: 1.1; margin: 4px 0 2px 0;
+        }
+        .iot-card.trash.warn .iot-value { color: var(--itb-red); }
+        .iot-card .iot-sub { font-size: 0.72em; color: var(--itb-muted); }
+        .iot-card .iot-bar-wrap {
+            background: var(--itb-blue-border);
+            border-radius: 99px; height: 5px;
+            margin-top: 8px; overflow: hidden;
+        }
+        .iot-card .iot-bar { height: 100%; border-radius: 99px; transition: width 1s ease; }
+        .iot-card.people .iot-bar { background: var(--itb-blue); }
+        .iot-card.temp .iot-bar { background: #e67e22; }
+        .iot-card.trash .iot-bar { background: var(--itb-green); }
+        .iot-card.trash.warn .iot-bar { background: var(--itb-red); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-brand">
+            🏛️ Smart Space ITB <span>/ Dashboard Simulasi GKU 1</span>
+        </div>
+        <div class="header-right">👤 Muhammad Rizqi Azhar &nbsp;|&nbsp; NIM: 18225111</div>
+    </div>
+
+    <div class="page-body">
+
+    <div id="user-info">
+        Study Points: <span class="points-val" id="points-display">0</span> poin
+    </div>
+
+    <div class="section-title">📡 Live Monitoring Kantin &amp; Area Belajar</div>
+
+    <div id="iot-panel">
+        <div class="iot-title">📡 Live Monitoring Kantin &amp; Area Belajar</div>
+        <div class="iot-cards">
+            <div class="iot-card people">
+                <div class="iot-icon">📷</div>
+                <div class="iot-label">People Counting</div>
+                <div class="iot-value" id="iot-orang">24</div>
+                <div class="iot-sub" id="iot-orang-sub">orang di kantin</div>
+                <div class="iot-bar-wrap"><div class="iot-bar" id="iot-orang-bar" style="width: 60%"></div></div>
+            </div>
+            <div class="iot-card temp">
+                <div class="iot-icon">🌡️</div>
+                <div class="iot-label">Suhu Lingkungan</div>
+                <div class="iot-value" id="iot-suhu">28°C</div>
+                <div class="iot-sub" id="iot-suhu-sub">Cukup nyaman</div>
+                <div class="iot-bar-wrap"><div class="iot-bar" id="iot-suhu-bar" style="width: 55%"></div></div>
+            </div>
+            <div class="iot-card trash" id="iot-trash-card">
+                <div class="iot-icon">🗑️</div>
+                <div class="iot-label">Kapasitas Sampah</div>
+                <div class="iot-value" id="iot-sampah">45%</div>
+                <div class="iot-sub" id="iot-sampah-sub">Masih aman</div>
+                <div class="iot-bar-wrap"><div class="iot-bar" id="iot-sampah-bar" style="width: 45%"></div></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section-title">🪑 Status Meja GKU 1</div>
+    <div id="container-meja"></div>
+
+    <div id="panel-kontrol">
+        <button class="btn-control btn-idling" onclick="toggleIdling()">⏳ Mode Jeda</button>
+        <button class="btn-control btn-selesai" onclick="simulasiTinggalkanMeja()">🏃‍♂️ Tinggalkan Meja</button>
+    </div>
+
+    <div id="section-kantin">
+        <h3 style="text-align: center; margin-top:0;">🍔 Pesan Antar Kantin</h3>
+        <p style="font-size: 0.9em; text-align: center; color: #7f8c8d;">Lokasi Antar: <b><span id="active-seat-id"></span></b></p>
+        
+        <div style="display: flex; justify-content: space-around; margin-bottom: 15px;">
+            <button id="btn-stand-1" class="btn-control" onclick="pilihStand(1)">Stand 1</button>
+            <button id="btn-stand-2" class="btn-control" onclick="pilihStand(2)">Stand 2</button>
+            <button id="btn-stand-3" class="btn-control" onclick="pilihStand(3)">Stand 3</button>
+        </div>
+
+        <div id="area-menu" style="display: none;">
+            <h4 id="nama-stand-terpilih" style="margin: 0 0 10px 0;"></h4>
+            <div id="daftar-menu-stand"></div>
+            
+            <div class="menu-item" style="color: #7f8c8d; margin-top: 10px;"><span>Biaya Antar (Flat)</span> <b>Rp1.000</b></div>
+            <div class="menu-item" id="baris-diskon" style="display: none; color: #27ae60;"><span>Diskon Voucher</span> <b>-Rp5.000</b></div>
+            
+            <div class="voucher-box">
+                <p style="margin:0 0 10px 0; font-size: 0.9em;">Tukar 50 Poin untuk Potongan Rp5.000</p>
+                <button class="btn-main" id="btn-voucher" onclick="tukarVoucher()" style="width: 100%; background: #1abc9c;">Tukar Voucher Diskon</button>
+            </div>
+
+            <button class="btn-main" onclick="bukaModalQRIS()" style="width: 100%; margin-top: 15px; background: #2c3e50;">Bayar via QRIS</button>
+        </div>
+    </div>
+
+    <div id="modal-checkin" class="modal">
+        <div class="modal-content">
+            <h2 id="judul-meja">Meja</h2>
+            <p>Sistem memvalidasi lokasi GPS kamu.</p>
+            <button class="btn-main" onclick="prosesCheckIn()">Tandai Terisi</button>
+            <button class="btn-main" style="background: #e74c3c;" onclick="tutupModal('modal-checkin')">Batal</button>
+        </div>
+    </div>
+
+    <div id="modal-qris" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">Pembayaran QRIS</h2>
+            <p id="qris-nama-stand" style="font-weight:bold; margin-bottom: 5px;"></p>
+            <div class="qris-barcode">GAMBAR QRIS</div>
+            <p style="font-size: 0.8em; color: #7f8c8d;">Silakan scan menggunakan m-Banking, Gopay, Ovo, atau ShopeePay.</p>
+            
+            <button class="btn-main" onclick="simulasiBayarBerhasil()" style="width: 100%; background: #27ae60;">Simulasikan Bayar Berhasil</button>
+            <button class="btn-main" style="background: #e74c3c; width: 100%;" onclick="tutupModal('modal-qris')">Batal / Tutup</button>
+        </div>
+    </div>
+
+    </div><!-- end page-body -->
+
+    <script>
+        let userPoints = 0;
+        let mejaTerpilih = "";
+        let pointInterval;
+        let isIdling = false;
+        let standAktif = "";
+        let voucherDipakai = false;
+
+        const daftarMeja = {
+            "K1-01-01": { status: "Kosong" },
+            "K1-01-02": { status: "Kosong" },
+            "K1-01-03": { status: "Kosong" }
+        };
+
+        const dataKantin = {
+            1: { 
+                nama: "Stand 1 - Ayam Geprek Bensu", 
+                menu: [ 
+                    {nama: "Ayam Geprek + Nasi", harga: "Rp15.000"}, 
+                    {nama: "Nasi Goreng Spesial", harga: "Rp18.000"},
+                    {nama: "Ayam Penyet", harga: "Rp16.000"},
+                    {nama: "Es Teh Manis", harga: "Rp4.000"},
+                    {nama: "Es Jeruk", harga: "Rp5.000"} 
+                ] 
+            },
+            2: { 
+                nama: "Stand 2 - Mie Ayam Mas Boy", 
+                menu: [ 
+                    {nama: "Mie Ayam Pangsit", harga: "Rp13.000"}, 
+                    {nama: "Bakso Urat Besar", harga: "Rp15.000"},
+                    {nama: "Kwetiau Goreng", harga: "Rp14.000"},
+                    {nama: "Es Campur", harga: "Rp8.000"},
+                    {nama: "Air Mineral", harga: "Rp4.000"} 
+                ] 
+            },
+            3: { 
+                nama: "Stand 3 - Kopi Kenangan", 
+                menu: [ 
+                    {nama: "Kopi Susu Aren", harga: "Rp18.000"}, 
+                    {nama: "Americano", harga: "Rp15.000"},
+                    {nama: "Matcha Latte", harga: "Rp20.000"},
+                    {nama: "Roti Bakar Coklat Keju", harga: "Rp12.000"},
+                    {nama: "Pisang Goreng Keju", harga: "Rp10.000"} 
+                ] 
+            }
+        };
+
+        function tampilkanMeja() {
+            const container = document.getElementById("container-meja");
+            container.innerHTML = "";
+            for (let id in daftarMeja) {
+                const div = document.createElement("div");
+                div.className = `meja ${daftarMeja[id].status.toLowerCase()}`;
+                div.innerText = id;
+                div.onclick = () => bukaModalCheckin(id);
+                container.appendChild(div);
+            }
+        }
+
+        function bukaModalCheckin(id) {
+            if (daftarMeja[id].status !== "Kosong") {
+                alert("Meja sedang digunakan atau dalam mode jeda.");
+                return;
+            }
+            mejaTerpilih = id;
+            document.getElementById("judul-meja").innerText = "Meja: " + id;
+            document.getElementById("modal-checkin").style.display = "block";
+        }
+
+        function tutupModal(idModal) { 
+            document.getElementById(idModal).style.display = "none"; 
+        }
+
+        function prosesCheckIn() {
+            alert("Memvalidasi jarak GPS...\nBerhasil! Jarak < 2 meter.");
+            daftarMeja[mejaTerpilih].status = "Terisi";
+            tutupModal('modal-checkin');
+            tampilkanMeja();
+            
+            document.getElementById("panel-kontrol").style.display = "block";
+            document.getElementById("section-kantin").style.display = "block";
+            document.getElementById("active-seat-id").innerText = mejaTerpilih;
+            
+            mulaiHitungPoin();
+        }
+
+        function mulaiHitungPoin() {
+            if(pointInterval) clearInterval(pointInterval);
+            pointInterval = setInterval(() => {
+                if(!isIdling) {
+                    userPoints += 10;
+                    document.getElementById("points-display").innerText = userPoints;
+                }
+            }, 3000);
+        }
+
+        function toggleIdling() {
+            isIdling = !isIdling;
+            if (isIdling) {
+                daftarMeja[mejaTerpilih].status = "Idling";
+                alert("Mode Jeda Aktif (10 Menit). Poin berhenti dihitung sementara.");
+            } else {
+                daftarMeja[mejaTerpilih].status = "Terisi";
+                alert("Mode Jeda Dimatikan. Selamat belajar kembali!");
+            }
+            tampilkanMeja();
+        }
+
+        function simulasiTinggalkanMeja() {
+            alert("Sistem mendeteksi GPS kamu menjauh dari meja.\nStatus meja dikembalikan menjadi Kosong.");
+            daftarMeja[mejaTerpilih].status = "Kosong";
+            clearInterval(pointInterval);
+            
+            document.getElementById("panel-kontrol").style.display = "none";
+            document.getElementById("section-kantin").style.display = "none";
+            document.getElementById("area-menu").style.display = "none";
+            isIdling = false;
+            mejaTerpilih = "";
+            tampilkanMeja();
+        }
+
+        function pilihStand(idStand) {
+            standAktif = dataKantin[idStand].nama;
+            
+            for(let i=1; i<=3; i++) {
+                document.getElementById("btn-stand-"+i).classList.remove("btn-stand-aktif");
+            }
+            document.getElementById("btn-stand-"+idStand).classList.add("btn-stand-aktif");
+
+            document.getElementById("area-menu").style.display = "block";
+            document.getElementById("nama-stand-terpilih").innerText = standAktif;
+
+            let htmlMenu = "";
+            dataKantin[idStand].menu.forEach(item => {
+                htmlMenu += `<div class="menu-item"><span>${item.nama}</span> <b>${item.harga}</b></div>`;
+            });
+            document.getElementById("daftar-menu-stand").innerHTML = htmlMenu;
+        }
+
+        function tukarVoucher() {
+            if (voucherDipakai) return; 
+
+            if (userPoints >= 50) {
+                userPoints -= 50;
+                voucherDipakai = true;
+                document.getElementById("points-display").innerText = userPoints;
+                
+                document.getElementById("baris-diskon").style.display = "flex";
+                document.getElementById("btn-voucher").innerText = "Voucher Berhasil Dipakai!";
+                document.getElementById("btn-voucher").disabled = true;
+                document.getElementById("btn-voucher").style.background = "#bdc3c7";
+                
+                alert("Berhasil! Potongan harga Rp5.000 telah diterapkan pada pesananmu.");
+            } else {
+                alert("Poin belum cukup! Kamu butuh 50 Poin. (Belajar lebih lama lagi ya!)");
+            }
+        }
+
+        function bukaModalQRIS() {
+            document.getElementById("qris-nama-stand").innerText = standAktif;
+            document.getElementById("modal-qris").style.display = "block";
+        }
+
+        function simulasiBayarBerhasil() {
+            alert(`Pembayaran ke ${standAktif} Berhasil!\nMakanan akan segera diantar ke Meja ${mejaTerpilih}.`);
+            tutupModal('modal-qris');
+        }
+
+        const FIREBASE_CONFIG = {
+            apiKey:      "AIzaSyAmrcmx8zsmbmPYVJQTPshJbhiC7VYQ2Fk",
+            databaseURL: "https://smartspace-itb-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId:   "smartspace-itb",
+        };
+
+        // Load Firebase SDK
+        const fbScript1 = document.createElement("script");
+        fbScript1.src = "https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js";
+        document.head.appendChild(fbScript1);
+        const fbScript2 = document.createElement("script");
+        fbScript2.src = "https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js";
+        document.head.appendChild(fbScript2);
+
+        fbScript2.onload = function() {
+            firebase.initializeApp(FIREBASE_CONFIG);
+            const db = firebase.database();
+
+            // Listen to /smartspace — fires instantly on any change
+            db.ref("/smartspace").on("value", (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                // --- People ---
+                if (data.people) {
+                    const count = data.people.count ?? 0;
+                    const pct   = Math.round((count / 50) * 100);
+                    document.getElementById("iot-orang").innerText = count;
+                    document.getElementById("iot-orang-sub").innerText = count > 35 ? "⚠️ Kantin ramai" : "orang di kantin";
+                    document.getElementById("iot-orang-bar").style.width = Math.min(pct, 100) + "%";
+                }
+
+                // --- Temperature ---
+                if (data.environment) {
+                    const suhu = data.environment.temperature_c;
+                    if (suhu !== null && suhu !== undefined) {
+                        const suhuPct = Math.round(((suhu - 26) / 9) * 100);
+                        document.getElementById("iot-suhu").innerText = suhu.toFixed(1) + "°C";
+                        document.getElementById("iot-suhu-sub").innerText =
+                            suhu > 32 ? "Panas Lek" :
+                            suhu > 29 ? "Yah okelah" : "Udah nyaman disini :)";
+                        document.getElementById("iot-suhu-bar").style.width = Math.min(Math.max(suhuPct, 0), 100) + "%";
+                    } else {
+                        document.getElementById("iot-suhu").innerText = "--";
+                        document.getElementById("iot-suhu-sub").innerText = "Sensor error";
+                    }
+                }
+
+                // --- Trash ---
+                if (data.trash) {
+                    const sampah = data.trash.fill_percent ?? 0;
+                    const trashCard = document.getElementById("iot-trash-card");
+                    document.getElementById("iot-sampah").innerText = sampah + "%";
+                    document.getElementById("iot-sampah-sub").innerText = sampah > 75 ? "Perlu dikosongkan" : "Masih aman";
+                    document.getElementById("iot-sampah-bar").style.width = sampah + "%";
+                    if (sampah > 75) trashCard.classList.add("warn");
+                    else trashCard.classList.remove("warn");
+                }
+            });
+
+            console.log("Firebase realtime listener online.");
+        };
+
+        tampilkanMeja();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const mejaDariScan = urlParams.get('meja');
+
+        if (mejaDariScan && daftarMeja[mejaDariScan]) {
+            setTimeout(() => {
+                bukaModalCheckin(mejaDariScan);
+            }, 500);
+        } else if (mejaDariScan) {
+            alert("QR Code tidak valid atau Meja tidak ditemukan!");
+        }
+    </script>
+</body>
+</html>
