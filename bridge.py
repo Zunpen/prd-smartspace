@@ -9,8 +9,8 @@ BAUD_RATE     = 9600
 FIREBASE_DB_URL = "https://smartspace-itb-default-rtdb.asia-southeast1.firebasedatabase.app"
 FIREBASE_KEY  = "firebase_key.json"  
 
-USE_DROIDCAM  = True   
-DROIDCAM_URL  = "http://192.168.106.216:4747/video"  
+USE_CAMERA  = True   
+CAMERA_SOURCE  = 0 
 
 import firebase_admin
 from firebase_admin import credentials, db
@@ -27,12 +27,12 @@ def run_people_counter():
     import cv2
     hog = cv2.HOGDescriptor()
     hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
-    cap = cv2.VideoCapture(DROIDCAM_URL)
-    print("📷 DroidCam people counter started.")
+    cap = cv2.VideoCapture(CAMERA_SOURCE)
+    print("📷 USB camera people counter started.")
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("⚠️  DroidCam frame lost, retrying...")
+            print("⚠️  USB camera frame lost, retrying...")
             time.sleep(2)
             continue
         # Resize for faster processing
@@ -110,7 +110,7 @@ def run_arduino_bridge():
 
 # Start
 if __name__ == "__main__":
-    if USE_DROIDCAM:
+    if USE_CAMERA:
         cam_thread = threading.Thread(target=run_people_counter, daemon=True)
         cam_thread.start()
 
