@@ -10,7 +10,7 @@ FIREBASE_DB_URL = "https://smartspace-itb-default-rtdb.asia-southeast1.firebased
 FIREBASE_KEY  = "firebase_key.json"  
 
 USE_DROIDCAM  = True   
-DROIDCAM_URL  = "http://192.168.1.X:4747/video"  
+DROIDCAM_URL  = "http://192.168.106.216:4747/video"  
 
 import firebase_admin
 from firebase_admin import credentials, db
